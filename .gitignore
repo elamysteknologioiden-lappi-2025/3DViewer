@@ -5,6 +5,10 @@
 [Bb]uild/
 [Bb]uilds/
 [Ll]ogs/
+[Vv]RTK/
+[Oo]culus/
+[Rr]esources/
+_TerrainAutoUpgrade/
 
 # Never ignore Asset meta data
 ![Aa]ssets/**/*.meta
