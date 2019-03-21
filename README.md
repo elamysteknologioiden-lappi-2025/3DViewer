@@ -1,2 +1,2 @@
 # 3DViewer
-# Guide
+Requires VRTK + Oculus SDK for Unity
