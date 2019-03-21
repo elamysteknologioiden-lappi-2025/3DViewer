@@ -50,6 +50,11 @@ ExportedObj/
 
 # Unity3D generated file on crash reports
 sysinfo.txt
+Oculus.meta
+Resources.meta
+VRTK.meta
+_TerrainAutoUpgrade.meta
+
 
 # Builds
 *.apk
