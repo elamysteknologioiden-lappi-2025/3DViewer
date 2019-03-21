@@ -117,6 +117,11 @@ public class pLab_VRViewerControls : MonoBehaviour
     /// </summary>
     private GameObject pivotPoint;
 
+    /// <summary>
+    /// defaultZ
+    /// </summary>
+    private float defaultZ = 0f;
+
     #endregion
 
     #region // Public Attributes
@@ -169,6 +174,7 @@ public class pLab_VRViewerControls : MonoBehaviour
     /// </summary>
     private void Update() {
         zoomValue += Input.mouseScrollDelta.y * mouseScrollFactor;
+
         if(zoomValue < minZoomValue){
             zoomValue = minZoomValue;
         }
@@ -267,12 +273,12 @@ public class pLab_VRViewerControls : MonoBehaviour
         float cameraView = 2.0f * Mathf.Tan(0.5f * Mathf.Deg2Rad * viewCamera.fieldOfView);
         float distance = zoomValue * distanceFactor * objectSize / cameraView;
         viewCamera.transform.position = (bounds.center+ origoDiff) - distance * viewCamera.transform.forward;
-
+        defaultZ = viewCamera.transform.position.z;
     }
 
     private void UpdateCamera() {
 
-       // viewCamera.transform.position = new Vec
+        viewCamera.transform.position = new Vector3(viewCamera.transform.position.x, viewCamera.transform.position.y, defaultZ * zoomValue);
     }
 
     #endregion
