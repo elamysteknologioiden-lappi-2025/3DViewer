@@ -30,6 +30,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using VRTK;
 
 /// <summary>
 /// Rotation Type
@@ -38,7 +39,9 @@ public enum ViewType {
     // Rotate Camera 
     ERotateCamera,
     // Rotate Object
-    ERotateObject
+    ERotateObject,
+    // Simple VR Mode
+    ESimpleVRMode
 };
 
 /// <summary>
@@ -48,10 +51,6 @@ public class pLab_VRViewerControls : MonoBehaviour
 {
     #region // SerializeField
 
-    /// <summary>
-    /// Object To View
-    /// </summary>
-    [SerializeField] private GameObject objectToView;
 
     /// <summary>
     /// View Type
@@ -112,20 +111,17 @@ public class pLab_VRViewerControls : MonoBehaviour
     /// </summary>
     private Vector3 objectOrigo = new Vector3();
 
-    /// <summary>
-    /// Object Pivot Point
-    /// </summary>
-    private GameObject pivotPoint;
 
     /// <summary>
     /// defaultZ
     /// </summary>
     private float defaultZ = 0f;
 
+
     #endregion
 
     #region // Public Attributes
-
+    public static pLab_VRViewerControls instance = null;
     #endregion
 
     #region // Protected Attributes
@@ -142,30 +138,33 @@ public class pLab_VRViewerControls : MonoBehaviour
     /// Awake is called when the script instance is being loaded.
     /// </summary>
     private void Awake() {
-        if(null == viewCamera)
-        {
+
+        if (null == instance) {
+            instance = this;
+        }
+
+        if (null == viewCamera){
             Debug.LogError("pLab_VRViewerControls -> Awake() --> viewCamera is NULL");
             this.gameObject.SetActive(false);
             return;
         }
-
-        if (null == objectToView)
-        {
+        if (null == pLab_3DViewerManager.instance.GetCurrentObject()) {
             Debug.LogError("pLab_VRViewerControls -> Awake() --> objectToView is NULL");
             this.gameObject.SetActive(false);
             return;
         }
 
-        SetCamera();
+
 
         if (ViewType.ERotateCamera == viewType){
-        }
-        else{
-            pivotPoint = new GameObject("Pivot Point");
-            objectToView.transform.SetParent(pivotPoint.transform);
-            objectToView.transform.localPosition = objectOrigo*-1f;
-            pivotPoint.transform.localPosition = objectOrigo;
+            SetCamera();
+        } else if (ViewType.ESimpleVRMode == viewType) {
+            SetCamera();
+            pLab_3DViewerManager.instance.usePivot = true;
 
+        } else {
+            SetCamera();
+            pLab_3DViewerManager.instance.usePivot = true;
         }
     }
 
@@ -173,22 +172,36 @@ public class pLab_VRViewerControls : MonoBehaviour
     /// Update is called every frame, if the MonoBehaviour is enabled
     /// </summary>
     private void Update() {
-        zoomValue += Input.mouseScrollDelta.y * mouseScrollFactor;
 
-        if(zoomValue < minZoomValue){
-            zoomValue = minZoomValue;
-        }
-        else if (zoomValue > maxZoomValue){
-            zoomValue = maxZoomValue;
-        }
 
         if(ViewType.ERotateCamera == viewType) {
+            zoomValue += Input.mouseScrollDelta.y * mouseScrollFactor;
+            if (zoomValue < minZoomValue) {
+                zoomValue = minZoomValue;
+            } else if (zoomValue > maxZoomValue) {
+                zoomValue = maxZoomValue;
+            }
             RotateCameraMode();
             SetCamera();
         }
-        else{
-   
-            RotateObject();
+        else if (ViewType.ERotateObject == viewType) {
+            zoomValue += Input.mouseScrollDelta.y * mouseScrollFactor;
+            if (zoomValue < minZoomValue) {
+                zoomValue = minZoomValue;
+            } else if (zoomValue > maxZoomValue) {
+                zoomValue = maxZoomValue;
+            }
+
+            if (Input.GetMouseButtonDown(0)) {
+                prevMousePosition = Input.mousePosition;
+            }
+
+            if (Input.GetMouseButton(0)) {
+                Vector3 deltaPosition = Input.mousePosition - prevMousePosition;
+                RotateObject(deltaPosition);
+            }
+
+            
             UpdateCamera();
         }
     }
@@ -196,30 +209,16 @@ public class pLab_VRViewerControls : MonoBehaviour
     #endregion
 
     #region // Private Methods
+    
 
     /// <summary>
     /// RotateObject
     /// </summary>
-    private void RotateObject() {
-
-        if (Input.GetMouseButtonDown(0)){
-            prevMousePosition = Input.mousePosition;
-        }
-        if (Input.GetMouseButtonDown(2)){
-            prevMousePosition = Input.mousePosition;
-        }
-        if (Input.GetMouseButton(2)){
-            Vector3 deltaPosition = Input.mousePosition - prevMousePosition;
-            prevMousePosition = Input.mousePosition;
-        }
-        if (Input.GetMouseButton(0)){
-            Vector3 deltaPosition = Input.mousePosition - prevMousePosition;
-            xRot += Time.deltaTime * 50 * deltaPosition.y;
-            yRot -= Time.deltaTime * 50 * deltaPosition.x;
-
-            pivotPoint.gameObject.transform.rotation = Quaternion.Euler(xRot, yRot, 0);
-            prevMousePosition = Input.mousePosition;
-        }
+    public void RotateObject(Vector3 aDeltaPosition) {
+        xRot += Time.deltaTime * 50 * aDeltaPosition.y;
+        yRot -= Time.deltaTime * 50 * aDeltaPosition.x;
+        pLab_3DViewerManager.instance.PivotPointObject().transform.rotation = Quaternion.Euler(xRot, yRot, 0);
+        prevMousePosition = Input.mousePosition;
     }
 
     /// <summary>
@@ -257,14 +256,8 @@ public class pLab_VRViewerControls : MonoBehaviour
     /// Set Camera to correct Position
     /// </summary>
     private void SetCamera() {
-        MeshRenderer meshR =  objectToView.GetComponent<MeshRenderer>();
 
-        if (null == meshR) {
-            Debug.LogError("pLab_VRViewerControls -> SetCamera() --> MeshRenderer is NULL");
-            this.gameObject.SetActive(false);
-            return;
-        }
-        Bounds bounds = objectToView.GetComponent<MeshRenderer>().bounds;
+        Bounds bounds = pLab_3DViewerManager.instance.GetCurrentObject().GetComponent<MeshRenderer>().bounds;
         objectOrigo = bounds.center;
 
         float distanceFactor = 2.0f; 
@@ -274,8 +267,13 @@ public class pLab_VRViewerControls : MonoBehaviour
         float distance = zoomValue * distanceFactor * objectSize / cameraView;
         viewCamera.transform.position = (bounds.center+ origoDiff) - distance * viewCamera.transform.forward;
         defaultZ = viewCamera.transform.position.z;
+
+        Debug.LogError(defaultZ);
     }
 
+    /// <summary>
+    /// UpdateCamera
+    /// </summary>
     private void UpdateCamera() {
 
         viewCamera.transform.position = new Vector3(viewCamera.transform.position.x, viewCamera.transform.position.y, defaultZ * zoomValue);
