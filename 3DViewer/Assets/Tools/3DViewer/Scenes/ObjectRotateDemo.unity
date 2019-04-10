@@ -351,8 +351,31 @@ PrefabInstance:
       propertyPath: viewCamera
       value: 
       objectReference: {fileID: 367762060}
-    m_RemovedComponents: []
+    m_RemovedComponents:
+    - {fileID: 5104866127052461458, guid: 55f17cfddd70efe478626353e96b1a84, type: 3}
   m_SourcePrefab: {fileID: 100100000, guid: 55f17cfddd70efe478626353e96b1a84, type: 3}
+--- !u!1 &535899754 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 5104866127052461460, guid: 55f17cfddd70efe478626353e96b1a84,
+    type: 3}
+  m_PrefabInstance: {fileID: 411863650}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &535899755
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 535899754}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: dfff9e1cd95c272408b4212746e7e14c, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  listOfObjects:
+  - {fileID: 176705177}
+  viewCamera: {fileID: 367762060}
+  usePivot: 1
 --- !u!1 &1584281129
 GameObject:
   m_ObjectHideFlags: 0
