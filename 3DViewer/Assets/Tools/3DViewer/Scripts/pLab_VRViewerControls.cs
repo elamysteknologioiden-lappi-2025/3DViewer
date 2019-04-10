@@ -2,7 +2,7 @@
  * File         : pLab_VRViewerControls.cs
  * Author       : Toni Westerlund (toni.westerlund@lapinamk.fi)
  * Lisence      : MIT Licence
- * Copyright    : Lapland University of Applied Sciences
+ * Copyright    : Lapland University of Applied Sciences, Lapin AMK
  * 
  * MIT License
  * 
