@@ -346,6 +346,11 @@ PrefabInstance:
       propertyPath: usePivot
       value: 1
       objectReference: {fileID: 0}
+    - target: {fileID: 5104866127052461458, guid: 55f17cfddd70efe478626353e96b1a84,
+        type: 3}
+      propertyPath: viewCamera
+      value: 
+      objectReference: {fileID: 367762060}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 55f17cfddd70efe478626353e96b1a84, type: 3}
 --- !u!1 &1584281129
@@ -377,8 +382,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d51aa21e21167d04db8f4e9072ac0801, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  viewType: 0
-  viewCamera: {fileID: 367762060}
+  viewType: 1
   mouseScrollFactor: 0.1
   maxZoomValue: 10
   minZoomValue: 0
