@@ -98,9 +98,6 @@ public class pLab_VRViewerControls : MonoBehaviour
 
     #region // Base Class Methods
 
-    /// <summary>
-    /// Awake is called when the script instance is being loaded.
-    /// </summary>
     private void Awake() {
 
         if (null == pLab_3DViewerManager.instance.GetCurrentObject()) {
